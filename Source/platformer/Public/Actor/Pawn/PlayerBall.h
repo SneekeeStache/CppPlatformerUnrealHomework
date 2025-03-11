@@ -30,7 +30,11 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION()
+	void StartMoveBall(const FInputActionValue& Value);
+	UFUNCTION()
 	void MoveBall(const FInputActionValue& Value);
+	UFUNCTION()
+	void StopMoveBall(const FInputActionValue& Value);
 	UFUNCTION()
 	void jumpBall(const FInputActionValue& Value);
 	UFUNCTION()
@@ -70,6 +74,7 @@ public:
 	UPROPERTY(EditAnywhere,Category="Debug")
 	int nbJump=0;
 
+	UPROPERTY(EditAnywhere,Category="Debug")
 	FVector PlatformVelocity;
 
 	FHitResult HitResult;

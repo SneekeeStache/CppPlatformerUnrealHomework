@@ -64,11 +64,10 @@ void APlayerBall::Tick(float DeltaTime)
 				if (!moving)
 				{
 					CharacterMesh->SetPhysicsLinearVelocity(FVector(0.f,0.f,CharacterMesh->GetPhysicsLinearVelocity().Z));
+					CharacterMesh->SetPhysicsLinearVelocity(CharacterMesh->GetPhysicsLinearVelocity()+PlatformVelocity);
 				}
 				PlatformVelocity=platformMouvent->PlatformMesh->GetPhysicsLinearVelocity();
-				CharacterMesh->SetPhysicsLinearVelocity(CharacterMesh->GetPhysicsLinearVelocity()+PlatformVelocity);
-				
-				
+
 			}
 			else
 			{
@@ -89,7 +88,6 @@ void APlayerBall::Tick(float DeltaTime)
 		CharacterMesh->GetPhysicsLinearVelocity().Z
 			)
 		);
-	moving=false;
 	DrawDebugLine(GetWorld(),GetActorLocation(),TraceEndDirection,FColor::Red);
 }
 
@@ -100,22 +98,35 @@ void APlayerBall::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	APlatformerPlayerController* PlayerController = Cast<APlatformerPlayerController>(GetController());
 	if (PlayerController)
 	{
+		
+		PlayerController->EnhancedInputComponent->BindAction(PlayerController->MoveAction, ETriggerEvent::Started, this, &APlayerBall::StartMoveBall);
 		PlayerController->EnhancedInputComponent->BindAction(PlayerController->MoveAction, ETriggerEvent::Triggered, this, &APlayerBall::MoveBall);
+		PlayerController->EnhancedInputComponent->BindAction(PlayerController->MoveAction, ETriggerEvent::Completed, this, &APlayerBall::StopMoveBall);
 		PlayerController->EnhancedInputComponent->BindAction(PlayerController->JumpAction,ETriggerEvent::Started,this,&APlayerBall::jumpBall);
 	}
 }
 
+void APlayerBall::StartMoveBall(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp,Log,TEXT("StartMoveBall"));
+	moving=true;
+}
+
 void APlayerBall::MoveBall(const FInputActionValue& Value)
 {
-	moving=true;
+	UE_LOG(LogTemp,Log,TEXT("APlayerBall::MoveBall"));
 	FVector2d MoveInput = Value.Get<FVector2d>();
 	if (!bumped)
 	{
-		
-		
 		CharacterMesh->AddImpulse(FVector(MoveInput.Y*MovementSpeed, MoveInput.X*MovementSpeed, 0));
 	}
 	
+}
+
+void APlayerBall::StopMoveBall(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp,Log,TEXT("StopMoveBall"));
+	moving=false;
 }
 
 
